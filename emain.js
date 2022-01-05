@@ -1,16 +1,24 @@
 // main.js
 
 // Modules to control application life and create native browser window
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, screen } = require("electron");
 const path = require("path");
 
 const createWindow = () => {
   // Create the browser window.
+  const size = screen.getPrimaryDisplay().workAreaSize;
+
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    // Get size of the screen
+
+    width: size.width,
+    height: size.height,
+    autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
+      nodeIntegration: true,
+      contextIsolation: false, // false if you want to run e2e test with Spectron
+      // allowRunningInsecureContent: serve ? true : false,
     },
   });
 
@@ -18,8 +26,32 @@ const createWindow = () => {
   mainWindow.loadFile(path.join(__dirname, "/dist/paems/index.html"));
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools();
 };
+
+// if (serve) {
+//   win.webContents.openDevTools();
+//   require("electron-reload")(__dirname, {
+//     electron: require(path.join(__dirname, "/../node_modules/electron")),
+//   });
+//   win.loadURL("http://localhost:4200");
+// } else {
+//   // Path when running electron executable
+//   let pathIndex = "./index.html";
+
+//   if (fs.existsSync(path.join(__dirname, "../dist/index.html"))) {
+//     // Path when running electron in local folder
+//     pathIndex = "../dist/index.html";
+//   }
+
+//   win.loadURL(
+//     url.format({
+//       pathname: path.join(__dirname, pathIndex),
+//       protocol: "file:",
+//       slashes: true,
+//     })
+//   );
+// }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -40,6 +72,6 @@ app.whenReady().then(() => {
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
 });
-
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
