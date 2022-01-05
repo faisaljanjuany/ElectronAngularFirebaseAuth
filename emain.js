@@ -1,8 +1,12 @@
-// main.js
-
+"use strict";
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, screen } = require("electron");
 const path = require("path");
+const electronReload = require("electron-reload");
+
+require("electron-reload")(__dirname, {
+  electron: path.join(__dirname, "node_modules", ".bin", "electron"),
+});
 
 const createWindow = () => {
   // Create the browser window.
@@ -19,6 +23,7 @@ const createWindow = () => {
       nodeIntegration: true,
       contextIsolation: false, // false if you want to run e2e test with Spectron
       // allowRunningInsecureContent: serve ? true : false,
+      allowRunningInsecureContent: false
     },
   });
 
@@ -75,3 +80,11 @@ app.on("window-all-closed", () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
+try {
+  require("electron-reloader")(module, {
+    debug: true,
+    watchRenderer: true,
+  });
+} catch (_) {
+  console.log("Error");
+}
